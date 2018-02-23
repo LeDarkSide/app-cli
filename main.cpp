@@ -1,9 +1,9 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 
+#include <ledarkside.h>
 #include <repositorytask.h>
 #include <packagetask.h>
-#include <settings.h>
 
 #include <QDebug>
 
@@ -15,24 +15,40 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(VERSION);
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(a.tr("Command line interface for LeDarkSide"));
+    parser.setApplicationDescription(QCoreApplication::tr("Command line interface for LeDarkSide"));
     parser.addHelpOption();
     parser.addVersionOption();
 
     parser.addOptions({
-            {{"l", "list"},
+            {"list-repos",
+                QCoreApplication::translate("main", "List repositories.")},
+            {"info-repo",
+                QCoreApplication::translate("main", "Displays information about a repository."),
+                QCoreApplication::translate("main", "repository name")},
+            {"update-repo",
+                QCoreApplication::translate("main", "Update a repository."),
+                QCoreApplication::translate("main", "repository name")},
+            {"update-repos",
+                QCoreApplication::translate("main", "Update repositories.")},
+
+            {"list-pkgs",
                 QCoreApplication::translate("main", "List packages in repositories.")},
-            {{"ur", "update-repo"},
-                QCoreApplication::translate("main", "Update the official repository.")},
-            {"info",
+            {"list-installed",
+                QCoreApplication::translate("main", "List installed packages.")},
+            {"info-pkg",
                 QCoreApplication::translate("main", "Displays information about a package."),
                 QCoreApplication::translate("main", "package id")},
-            {{"i", "install"},
+            {"install-pkg",
                 QCoreApplication::translate("main", "Installs the package component."),
                 QCoreApplication::translate("main", "package id")},
-            {{"u", "update"},
+            {"uninstall-pkg",
+                QCoreApplication::translate("main", "Uninstalls the package component."),
+                QCoreApplication::translate("main", "package id")},
+            {"update-pkg",
                 QCoreApplication::translate("main", "Updates package component."),
                 QCoreApplication::translate("main", "package id")},
+            {"update-pkgs",
+                QCoreApplication::translate("main", "Update all installed packages.")},
     });
 
     parser.process(a);
@@ -62,7 +78,7 @@ int main(int argc, char *argv[])
 
     if (parser.isSet("info")) {
         QObject::connect(&taskPack, &ReadPackage::finished, qApp, &QCoreApplication::quit, Qt::QueuedConnection);
-        taskPack.start(Settings::repositories() + '/' + repo.name() + '/' + parser.value("info"));
+        taskPack.start(LeDarkSide::repositories() + '/' + repo.name() + '/' + parser.value("info"));
     }
 
     return a.exec();
